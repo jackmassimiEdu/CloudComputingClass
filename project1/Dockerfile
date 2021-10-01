@@ -1,5 +1,5 @@
 FROM openjdk
-COPY . /usr/src/myapp
-WORKDIR /usr/src/myapp
+COPY . /
+WORKDIR /
 RUN javac dockerProject.java
 CMD ["java", "dockerProject"]
