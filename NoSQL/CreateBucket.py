@@ -4,8 +4,8 @@ import csv
 bucketName = 'jackmassimihw3bucket'
 
 s3 = boto3.resource('s3',
-                    aws_access_key_id='AKIA6CZA42XJ6O25H5VP',
-                    aws_secret_access_key='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')
+                    aws_access_key_id=key_goes_here,
+                    aws_secret_access_key=its_a_secret)
 try:
     s3.create_bucket(Bucket=bucketName, CreateBucketConfiguration={'LocationConstraint': 'us-east-2'})
 except Exception as e:
