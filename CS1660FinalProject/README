@@ -1,0 +1,11 @@
+I could not get a version of jupyter notebook to work but here are the urls of the images I am currently using including the current jupyter notebook image on my cluster.
+
+https://hub.docker.com/r/ibmcom/jupyter-base-notebook-ppc64le
+https://hub.docker.com/_/sonarqube
+https://hub.docker.com/r/sequenceiq/hadoop-docker
+https://hub.docker.com/r/bitnami/spark
+
+The steps to get the images on a kubernetes cluster running
+  - Create the cluster on gcp
+  - Connect to the cluster through the gcp console
+  - Create deployments for each
