@@ -16,7 +16,6 @@ Once the cluster is created we need to pull, tag, and push docker images to the 
     d) bde2020/spark-worker
     e) jupyter/all-spark-notebook
     f) sonarqube
-    g) jackmassimi2/cs1660final
   6) For each of these images follow the following steps:
     a) Enter "docker pull <image-path>"
     b) Enter "docker tag <image-path> gcr.io/<gcp-project-name>/<image-path>"
@@ -78,5 +77,13 @@ Now we have to expose each of the deployments. Except for the hadoop datanode an
   2) In the kubernetes engine enter the services and ingress tab and ensure that all of these were exposed succesfully.          
   
 Now all that's left to do is run the controller:
-  1) Enter the command into the google shell terminal "kubectl run -i --tty --attach main-app --image=jackmassimi2/cs1660final" This will start and connect to a new kubernetes
+  1) Download the folder with the java file and dockerfile. 
+  2) Open the java file in the cs1660 folder in this registry. Enter the correct ip addresses into the switch statements. Ip addresses for your exposed containers can be 
+     found in the services and ingress tab of kubernetes engine. Save the changes.
+  3) In a command prompt navigate to the folder with the java file and docker file. Enter the command "docker build -t <docker-username>/<name-of-docker-image> ."
+  4) Then enter "docker push <docker-username>/<name-of-docker-image>
+  5) In the google shell terminal enter "docker pull <image-path>"
+  6) In the google shell terminal enter "docker tag <image-path> gcr.io/<gcp-project-name>/<image-path>"
+  7) In the google shell terminal enter "docker push gcr.io/<gcp-project-name>/<image-path>"
+  8) Enter the command into the google shell terminal "kubectl run -i --tty --attach main-app --image=<image-path>" This will start and connect to a new kubernetes
      pod that is running the controller. If it doesn't show the selection options immidiately then just hit enter.
