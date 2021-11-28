@@ -87,3 +87,5 @@ Now all that's left to do is run the controller:
   7) In the google shell terminal enter "docker push gcr.io/<gcp-project-name>/<image-path>"
   8) Enter the command into the google shell terminal "kubectl run -i --tty --attach main-app --image=<image-path>" This will start and connect to a new kubernetes
      pod that is running the controller. If it doesn't show the selection options immidiately then just hit enter.
+     
+Note: Docker image used in my demo can be found at jackmassimi2/cs1660final. This image will not work if you try to use it because the IP addresses will differ between users.
