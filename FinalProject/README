@@ -1,1 +1,82 @@
-
+First step is to start a kubernetes cluster.
+  1) In your gcp project search for kubernetes engine.
+  2) Click the clusters tab then at the top click create.
+  3) Create a standard cluster.
+  4) Enter a name and select the region you want.
+  
+Once the cluster is created we need to pull, tag, and push docker images to the google container registry.
+  1) Go back to kubernetes engine.
+  2) In the cluster tab click the cluster you created.
+  3) At the top of that clusters page there is a CONNECT button. Click that and select RUN IN CLOUD SHELL
+  4) This should open a google shell terminal with a command pre entered. Hit enter to execute that command.
+  5) Now get a list of the docker images you will be using. For this project I used:
+    a) bde2020/hadoop-datanode
+    b) bde2020/hadoop-namenode
+    c) bde2020/spark-master
+    d) bde2020/spark-worker
+    e) jupyter/all-spark-notebook
+    f) sonarqube
+    g) jackmassimi2/cs1660final
+  6) For each of these images follow the following steps:
+    a) Enter "docker pull <image-path>"
+    b) Enter "docker tag <image-path> gcr.io/<gcp-project-name>/<image-path>"
+    c) Enter "docker push gcr.io/<gcp-project-name>/<image-path>"
+  7) Now in the gcp search for container registry. You should see a folder with each of the docker sources. In each folder there should be another folder containing each image.
+     Verify that all the images you wanted were added to the registry.
+     
+Now that we have the docker images ready to go we need to deploy them to the cluster.
+  1) Navigate back to the container registry. For each image in the registry EXCEPT FOR THE CONTROLLER IMAGE follow the following steps:
+    a) Navigate through the folders until you get to docker image.
+    b) Click the docker image.
+    c) At the top there is a DEPLOY button. Click it. It should open a drop down menu. Select Deploy to GKE.
+    d) Add in any necessary environment variables in the first page
+      i) For hadoop data node the required environment variables are:
+         CORE_CONF_fs_defaultFS = hdfs://namenode:9000
+         CORE_CONF_hadoop_http_staticuser_user = root
+         CORE_CONF_hadoop_proxyuser_hue_groups = *
+         CORE_CONF_hadoop_proxyuser_hue_hosts = *
+         CORE_CONF_io_compression_codecs = org.apache.hadoop.io.compress.SnappyCodec
+         HDFS_CONF_dfs_namenode_datanode_registration_ip___hostname___check = false
+         HDFS_CONF_dfs_permissions_enabled = false
+         HDFS_CONF_dfs_webhdfs_enabled = true
+         SERVICE_PRECONDITION = namenode:9000
+      ii) For hadoop name node the required environment variables are:
+          CORE_CONF_fs_defaultFS = hdfs://namenode:9000
+          CORE_CONF_hadoop_http_staticuser_user = root
+          CORE_CONF_hadoop_proxyuser_hue_groups = *
+          CORE_CONF_hadoop_proxyuser_hue_hosts = *
+          CORE_CONF_io_compression_codecs = org.apache.hadoop.io.compress.SnappyCodec
+          HDFS_CONF_dfs_namenode_datanode_registration_ip___hostname___check = false
+          HDFS_CONF_dfs_permissions_enabled = false
+          HDFS_CONF_dfs_webhdfs_enabled = true
+          CLUSTER_NAME = test
+       iii) For sonarqube the required environment variable is:
+            SONAR_ES_BOOTSTRAP_CHECKS_DISABLE = true
+       iv) For the spark master the required environment variable is:
+           INIT_DAEMON_STEP = setup_spark
+       v) For the spark worker the required environment variable is:
+          SPARK_MASTER = spark://sparkmaster:7077
+    e) Once the environment variables are set click continue. In the configuration page give the application a descriptive name and ensure the cluster it is being deployed
+       to is the one you just created. Once that is done click deploy.
+  2) Once you've done that for each image navigate to the kubernetes engine in gcp. Ensure that each image deployed succesfully by clicking the workload tab and checking the
+     status of each deployment.
+  
+Now we have to expose each of the deployments. Except for the hadoop datanode and spark workernode
+  1) For each deployment in the kubernetes engine follow the following steps:
+    a) Click the specific deployment. At the top of the deployment page there should be an ACTIONS button. Click it. This should open a drop down menu. Select expose.
+    b) Enter the appropiate port and target port, and ensure the service type is cluster IP.
+      i) For hadoop namenode there are two port/target ports:
+         9870:9870
+         9000:9000
+      ii) For jupyter notebook:
+          8888:8888
+      iii) For sonarqube:
+           9000:9000
+      iv) For spark master there are two:
+          8080:8080
+          7077:7077
+  2) In the kubernetes engine enter the services and ingress tab and ensure that all of these were exposed succesfully.          
+  
+Now all that's left to do is run the controller:
+  1) Enter the command into the google shell terminal "kubectl run -i --tty --attach main-app --image=jackmassimi2/cs1660final" This will start and connect to a new kubernetes
+     pod that is running the controller. If it doesn't show the selection options immidiately then just hit enter.
